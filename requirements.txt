@@ -1,0 +1,16 @@
+pandas
+numpy
+yfinance
+scikit-learn
+xgboost
+matplotlib
+seaborn
+autogen
+openai
+alpaca-trade-api
+cvxpy
+optuna
+riskfolio-lib
+beautifulsoup4
+requests
+lxml
