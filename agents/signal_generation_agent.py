@@ -58,7 +58,7 @@ class SignalGenerationAgent:
             0.2 * int(self.last_model_accuracy > 0.55)
         )
 
-        if vote_score >= 0.7:
+        if vote_score >= 0.6:
             return "BUY"
         elif vote_score <= 0.3:
             return "SELL"
