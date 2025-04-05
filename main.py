@@ -1,6 +1,8 @@
 from agents.market_data_agent import MarketDataAgent
 from agents.signal_generation_agent import SignalGenerationAgent
 from agents.portfolio_optimization_agent import PortfolioOptimizationAgent
+from agents.risk_management_agent import RiskManagementAgent
+
 import pandas as pd
 
 def main():
@@ -8,15 +10,18 @@ def main():
     market_agent = MarketDataAgent()
     signal_agent = SignalGenerationAgent()
     portfolio_agent = PortfolioOptimizationAgent()
+    risk_agent = RiskManagementAgent()
 
     price_data = pd.DataFrame()
     signals = {}
+
     liquidity_scores = {
         "AAPL": 0.9,
         "MSFT": 0.9,
         "TLT": 0.7,
         "GLD": 0.6
     }
+
     tax_penalties = {
         "AAPL": 0.01,
         "MSFT": 0.00,
@@ -60,7 +65,6 @@ def main():
     print("\n📊 Final Portfolio Weights:")
     print(weights)
 
-    # Stress Test: COVID crash (Feb 2020 to Apr 2020)
     print("\n🧪 Running Stress Test (2020 Crash)...")
     test = portfolio_agent.stress_test(
         price_df=price_data,
@@ -71,6 +75,26 @@ def main():
 
     print("\n📉 Stress Test Results (Feb–Apr 2020):")
     for k, v in test.items():
+        print(f"{k}: {v:.4f}")
+
+    print("\n🛡 Running Risk Monitoring...")
+    baseline_corr = price_data.pct_change().dropna().corr()
+
+    risk_report = risk_agent.monitor(
+        price_df=price_data,
+        weights=weights,
+        baseline_corr=baseline_corr
+    )
+
+    print(f"\n📉 Portfolio VaR (95%): {risk_report['VaR_95']:.4f}")
+    print(f"📊 Portfolio Volatility: {risk_report['Volatility']:.4f}")
+    print(f"⚠️ Correlation Breakdown Detected: {risk_report['Corr_Breakdown']}")
+
+    print("\n📈 Correlation Change Matrix:")
+    print(risk_report["Corr_Change"])
+
+    print("\n💥 Macro Shock Simulation (10% Drop):")
+    for k, v in risk_report["Macro_Shock_Impact"].items():
         print(f"{k}: {v:.4f}")
 
 if __name__ == "__main__":
